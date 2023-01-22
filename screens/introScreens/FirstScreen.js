@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Text, View, Image, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { Text, View, Image, StyleSheet, Button, TouchableOpacity} from "react-native";
 import { COLORS } from '../../styles/color.js';
-const FirstScreen = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const FirstScreen = ({navigation}) => {
     const [screen, setScreen] = useState(0)
 
 
@@ -11,8 +13,12 @@ const FirstScreen = () => {
         { text: 'Get instant feedback for your child', backgroundColor: COLORS.thirdIntroScreen, svg: require('../../assets/screen2.png') },
     ]
 
-    function nextScreen() {
-        if(screen ==2 ) setScreen((screenNo) => 0);
+    async function nextScreen() {
+        if(screen ==2 ){
+            setScreen((screenNo) => 0);
+            AsyncStorage.setItem('key', 'value');
+            navigation.push('home');
+        }
         else setScreen((screenNo) => screenNo + 1);
     }
 
