@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import {
-    StyleSheet, Text, View,
+    StyleSheet, Text, View,Button,
     Platform, Keyboard,
     Image, TextInput, TouchableOpacity, KeyboardAvoidingView,
     Animated, Dimensions
@@ -11,9 +11,9 @@ import React, { useRef, useEffect } from 'react';
 import Forgetpassword from './forgetpassword';
 
 
-
 const Login = ({ navigation }) => {
-    const fadeAnim = useRef(new Animated.Value(1000)).current; // Initial value
+    const forgotPasswordMoveUp = useRef(new Animated.Value(1000)).current; // Initial value 
+    const backgroundFade = useRef(new Animated.Value(1)).current; // Initial value 
     const [user, setUser] = useState(true);
 
     function check() {
@@ -21,7 +21,12 @@ const Login = ({ navigation }) => {
     }
 
     function openForgetPasswordScreen() {
-        Animated.timing(fadeAnim, {
+        Animated.timing(backgroundFade, {
+            toValue: '0.4',
+            duration: 500,
+            useNativeDriver: false,
+        }).start();
+        Animated.timing(forgotPasswordMoveUp, {
             toValue: Platform.OS === 'ios' ? '350' : '200',
             duration: 500,
             useNativeDriver: false,
@@ -29,7 +34,12 @@ const Login = ({ navigation }) => {
     }
 
     function closeForgetPasswordScreen() {
-        Animated.timing(fadeAnim, {
+        Animated.timing(backgroundFade, {
+            toValue: '1',
+            duration: 500,
+            useNativeDriver: false,
+        }).start();
+        Animated.timing(forgotPasswordMoveUp, {
             toValue: 1000,
             duration: 500,
             useNativeDriver: false,
@@ -38,12 +48,12 @@ const Login = ({ navigation }) => {
     }
 
     useEffect(() => {
-        Animated.timing(fadeAnim, {
+        Animated.timing(forgotPasswordMoveUp, {
             toValue: (Dimensions.get('window').height) * 3,
             duration: 1000,
             useNativeDriver: false,
         });
-    }, [fadeAnim]);
+    }, [forgotPasswordMoveUp]);
 
     return (
         <KeyboardAvoidingView
@@ -52,36 +62,39 @@ const Login = ({ navigation }) => {
             keyboardVerticalOffset={-100}
             >
             <StatusBar style="auto" />
-            <View style={styles.container.header}>
-                <Image style={styles.container.header.headerImage} source={require('../../assets/logo.png')}></Image>
-                <Text style={styles.container.header.headerText}>Class Ganana</Text>
-            </View>
-            <Animated.View style={{ position: 'absolute', zIndex: 1, transform: [{ translateY: fadeAnim },] }}>
-                <View style={{ position: 'relative' }}>
-                    <Forgetpassword onCancle={() => closeForgetPasswordScreen()}></Forgetpassword>
+            <Animated.View style={[styles.container.header,{opacity: backgroundFade}]}>
+                <View>
+                    <Image style={styles.container.header.headerImage} source={require('../../assets/logo.png')}></Image>
+                    <Text style={styles.container.header.headerText}>Class Ganana</Text>
                 </View>
             </Animated.View>
-            <View style={styles.container.body}>
-                <View style={styles.container.body.formBody}>
-                    <Text style={styles.container.body.formBody.text}>Username or Email</Text>
-                    <TextInput style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='Yourschool.com'></TextInput>
-                    <Text style={styles.container.body.formBody.text}>Password:</Text>
-                    <View style={styles.container.body.formBody.passwordBlock}>
-                        <TextInput secureTextEntry={user} selectionColor={'grey'} style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='**********'></TextInput>
-                        <Ionicons name={(user) ? 'eye' : 'eye-off'} size={32} onPress={() => check()} />
+                <Animated.View style={{ position: 'absolute', zIndex: 1, transform: [{ translateY: forgotPasswordMoveUp },] }}>
+                    <View style={{ position: 'relative' }}>
+                        <Forgetpassword onCancle={() => closeForgetPasswordScreen()}></Forgetpassword>
                     </View>
-                    <TouchableOpacity style={styles.container.body.formBody.button} >
-                        <Text style={styles.container.body.formBody.button.text}>
-                            Sign In
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => openForgetPasswordScreen()} style={styles.container.forgetPassword}>
-                        <Text style={styles.container.forgetPassword.text}>
-                            Forget Password?
-                        </Text>
-                    </TouchableOpacity>
+                </Animated.View>
+                <View style={styles.container.body}>
+                    <View style={styles.container.body.formBody}>
+                        <Text style={styles.container.body.formBody.text}>Username or Email</Text>
+                        <TextInput style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='Yourschool.com'></TextInput>
+                        <Text style={styles.container.body.formBody.text}>Password:</Text>
+                        <View style={styles.container.body.formBody.passwordBlock}>
+                            <TextInput secureTextEntry={user} selectionColor={'grey'} style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='**********'></TextInput>
+                            <Ionicons name={(user) ? 'eye' : 'eye-off'} size={32} onPress={() => check()} />
+                        </View>
+                        <TouchableOpacity style={styles.container.body.formBody.button} >
+                            <Text style={styles.container.body.formBody.button.text}>
+                                Sign In
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => openForgetPasswordScreen()} style={styles.container.forgetPassword}>
+                            <Text style={styles.container.forgetPassword.text}>
+                                Forget Password?
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+
         </KeyboardAvoidingView>
     );
 }
@@ -93,6 +106,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
+        overflow: 'hidden',
         header: {
             width: '100%',
             justifyContent: 'center',
