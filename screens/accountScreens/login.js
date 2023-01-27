@@ -1,64 +1,96 @@
 import { StatusBar } from 'expo-status-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     StyleSheet, Text, View,
-    Platform,
-    Image, TextInput, TouchableOpacity, KeyboardAvoidingView
+    Platform, Keyboard,
+    Image, TextInput, TouchableOpacity, KeyboardAvoidingView,
+    Animated, Dimensions
 } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import Forgetpassword from './forgetpassword';
+
+
 
 const Login = ({ navigation }) => {
-        const [user, setUser] = useState(true);
-    
-        function check() {
-            setUser((user) => !user);
-        }
-    
-        useEffect(
-            function UpdateState() {
-            }
-        );
-    
-        return (
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : ''}
-                keyboardShouldPersistTaps="handled" style={styles.container}>
-                <StatusBar style="auto" />
-                <View style={styles.container.header}>
-                    <Image style={styles.container.header.headerImage} source={require('../../assets/logo.png')}></Image>
-                    <Text style={styles.container.header.headerText}>Class Ganana</Text>
+    const fadeAnim = useRef(new Animated.Value(1000)).current; // Initial value
+    const [user, setUser] = useState(true);
+
+    function check() {
+        setUser((user) => !user);
+    }
+
+    function openForgetPasswordScreen() {
+        Animated.timing(fadeAnim, {
+            toValue: Platform.OS === 'ios' ? '350' : '200',
+            duration: 500,
+            useNativeDriver: false,
+        }).start();
+    }
+
+    function closeForgetPasswordScreen() {
+        Animated.timing(fadeAnim, {
+            toValue: 1000,
+            duration: 500,
+            useNativeDriver: false,
+        }).start();
+        Keyboard.dismiss();
+    }
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: (Dimensions.get('window').height) * 3,
+            duration: 1000,
+            useNativeDriver: false,
+        });
+    }, [fadeAnim]);
+
+    return (
+        <KeyboardAvoidingView
+            style={[{ position: 'absolute', left: 0, right: 0, bottom: 0 }, styles.container]}
+            behavior={Platform.OS === 'ios' ? 'position' : ''}
+            keyboardVerticalOffset={-100}
+            >
+            <StatusBar style="auto" />
+            <View style={styles.container.header}>
+                <Image style={styles.container.header.headerImage} source={require('../../assets/logo.png')}></Image>
+                <Text style={styles.container.header.headerText}>Class Ganana</Text>
+            </View>
+            <Animated.View style={{ position: 'absolute', zIndex: 1, transform: [{ translateY: fadeAnim },] }}>
+                <View style={{ position: 'relative' }}>
+                    <Forgetpassword onCancle={() => closeForgetPasswordScreen()}></Forgetpassword>
                 </View>
-                <View style={styles.container.body}>
-                    {/* <Text style={styles.container.body.formHeading}>Sign In</Text> */}
-                    <View style={styles.container.body.formBody}>
-                        <Text style={styles.container.body.formBody.text}>Username or Email</Text>
-                        <TextInput style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='Yourschool.com'></TextInput>
-                        <Text style={styles.container.body.formBody.text}>Password:</Text>
-                        <View style={styles.container.body.formBody.passwordBlock}>
-                            <TextInput secureTextEntry={user} selectionColor={'grey'} style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='**********'></TextInput>
-                            <Ionicons name={(user)? 'eye' : 'eye-off'} size={32} onPress={() => check()} />
-                        </View>
-                        <TouchableOpacity style={styles.container.body.formBody.button} >
-                            <Text style={styles.container.body.formBody.button.text}>
-                                Sign In
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.container.forgetPassword}>
-                            <Text style={styles.container.forgetPassword.text}>
-                                Forget Password?
-                            </Text>
-                        </TouchableOpacity>
+            </Animated.View>
+            <View style={styles.container.body}>
+                <View style={styles.container.body.formBody}>
+                    <Text style={styles.container.body.formBody.text}>Username or Email</Text>
+                    <TextInput style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='Yourschool.com'></TextInput>
+                    <Text style={styles.container.body.formBody.text}>Password:</Text>
+                    <View style={styles.container.body.formBody.passwordBlock}>
+                        <TextInput secureTextEntry={user} selectionColor={'grey'} style={styles.container.body.formBody.textInput} placeholderTextColor="#00000054" placeholder='**********'></TextInput>
+                        <Ionicons name={(user) ? 'eye' : 'eye-off'} size={32} onPress={() => check()} />
                     </View>
+                    <TouchableOpacity style={styles.container.body.formBody.button} >
+                        <Text style={styles.container.body.formBody.button.text}>
+                            Sign In
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => openForgetPasswordScreen()} style={styles.container.forgetPassword}>
+                        <Text style={styles.container.forgetPassword.text}>
+                            Forget Password?
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-            </KeyboardAvoidingView>
-        );
+            </View>
+        </KeyboardAvoidingView>
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
         flex: 1,
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
         header: {
